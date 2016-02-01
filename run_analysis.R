@@ -1,23 +1,16 @@
 # open test set files
-
-#load the dplyr libary
-library(dplyr)
-
-xtest <- read.table("test/X_test.txt",sep = "")
-ytest <- read.table("test/y_test.txt",sep = "")
-subjectTest <- read.table("test/subject_test.txt",sep = "")
-
-
+xtest <- read.table("UCI HAR Dataset/test/X_test.txt",sep = "")
+ytest <- read.table("UCI HAR Dataset/test/y_test.txt",sep = "")
+subjectTest <- read.table("UCI HAR Dataset/test/subject_test.txt",sep = "")
 colnames(ytest) <- c("activityid")
 colnames(subjectTest) <- c("subjectid")
 testInfo <- cbind(subjectTest,ytest)
 completeXTest <- cbind(testInfo,xtest)
 
 # open training set
-xtrain <- read.table("train/X_train.txt",sep = "")
-ytrain <- read.table("train/y_train.txt",sep = "")
-subjectTrain <- read.table("train/subject_train.txt",sep = "")
-
+xtrain <- read.table("UCI HAR Dataset/train/X_train.txt",sep = "")
+ytrain <- read.table("UCI HAR Dataset/train/y_train.txt",sep = "")
+subjectTrain <- read.table("UCI HAR Dataset/train/subject_train.txt",sep = "")
 colnames(ytrain) <- c("activityid")
 colnames(subjectTrain) <- c("subjectid")
 trainInfo <- cbind(subjectTrain,ytrain)
@@ -25,10 +18,9 @@ completeXTrain <- cbind(trainInfo,xtrain)
 
 # merge test and train
 mergedData <- rbind(completeXTrain,completeXTest)
-
 # load features and activity labels
-featuresLabels <- read.table("test/features.txt",sep = "")
-activityLabels <- read.table("test/activity_labels.txt",sep="")
+featuresLabels <- read.table("UCI HAR Dataset/features.txt",sep = "")
+activityLabels <- read.table("UCI HAR Dataset/activity_labels.txt",sep="")
 colnames(activityLabels) <- c("activityid","activitydescription")
 # add V to row data so I can filter on flabels
 featuresLabels <- mutate(featuresLabels,flabels= paste("V",V1,sep=""))
@@ -53,8 +45,10 @@ colnames(filterData) <- c(stdFeaturesLabels$V2)
 activityData <- cbind.data.frame(mergedData$subjectid,mergedData$activityid)
 colnames(activityData) <- c("subjectid","activityid")
 
+#load the dplyr libary
+library(dplyr)
 #add in activity description
-activityData = join(activityData,activityLabels,by='activityid')
+activityData = inner_join(activityData,activityLabels,by='activityid')
 #remove activityId
 activityData2 <- cbind.data.frame(activityData$subjectid,activityData$activitydescription)
 colnames(activityData2) <- c("subjectid","activitydescription")
